@@ -55,7 +55,6 @@ void APaddle_Player_Controller::MoveHorizontal(float Val)
 
 	}
 
-
 }
 
 void APaddle_Player_Controller::Launch()

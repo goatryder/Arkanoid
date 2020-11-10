@@ -14,20 +14,26 @@ ABall::ABall()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SM_Ball = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ball"));
-	RootComponent = SM_Ball;
 
 	SM_Ball->SetSimulatePhysics(true);
 	SM_Ball->SetEnableGravity(false);
 	SM_Ball->SetConstraintMode(EDOFMode::XZPlane);
-	SM_Ball->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	// SM_Ball->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	SM_Ball->SetCollisionProfileName(TEXT("PhysicsActor"));
+	
+	SM_Ball->SetNotifyRigidBodyCollision(true);
+	SM_Ball->SetGenerateOverlapEvents(false);
+
+	RootComponent = SM_Ball;
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->bShouldBounce = true;
-	ProjectileMovement->Bounciness = 1.1f;
+	ProjectileMovement->Bounciness = 1.0f;
 	ProjectileMovement->Friction = 0.f;
 	ProjectileMovement->Velocity.X = 0.f;
 
+	Tags.Push(FName("Ball"));
 
 }
 
@@ -36,6 +42,10 @@ void ABall::BeginPlay()
 {
 	AActor::BeginPlay();
 	
+	// ProjectileMovement->OnProjectileBounce.AddDynamic(this, &ABall::OnBounce);
+
+	SM_Ball->OnComponentBeginOverlap.AddDynamic(this, &ABall::OnBounce);
+
 }
 
 // Called every frame
@@ -64,5 +74,31 @@ void ABall::Launch()
 UStaticMeshComponent* ABall::GetBall()
 {
 	return SM_Ball;
+}
+
+void ABall::OnBounce(UPrimitiveComponent* OverlapComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+
+	FVector BallPhysicsVelocity = SM_Ball->GetPhysicsLinearVelocity();
+
+	//UE_LOG(LogTemp, Warning, TEXT("Ball Velocity Before: %s, size: %f"),
+	//	*BallPhysicsVelocity.ToString(), BallPhysicsVelocity.Size());
+
+	BallPhysicsVelocity.Normalize();
+
+	//UE_LOG(LogTemp, Warning, TEXT("BallPhysicsVelocity Normalized: %s,  size: %f"),
+	//	*BallPhysicsVelocity.ToString(), BallPhysicsVelocity.Size());
+
+	VelocitySizeCache += BallVelocityModifierOnBounce;
+
+	SM_Ball->SetPhysicsLinearVelocity(
+		BallPhysicsVelocity * VelocitySizeCache, false);
+
+	//UE_LOG(LogTemp, Warning, TEXT("Ball Velocity After: %s, Size: %f"),
+	//	*SM_Ball->GetPhysicsLinearVelocity().ToString(), SM_Ball->GetPhysicsLinearVelocity().Size());
+
+
 }
 

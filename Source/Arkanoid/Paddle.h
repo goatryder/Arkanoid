@@ -7,7 +7,7 @@
 #include "Paddle.generated.h"
 
 class UFloatingPawnMovement;
-
+class UBoxComponent;
 
 UCLASS()
 class ARKANOID_API APaddle : public APawn
@@ -27,6 +27,21 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UFloatingPawnMovement* FloatingMovement;
+
+	FVector InitialPosition;
+
+	/*
+	UFUNCTION()
+		void OnOverlap(UPrimitiveComponent* OverlapComp, AActor* OtherActor,
+			UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+			const FHitResult& SweepResult);
+	*/
+
+
+	UFUNCTION()
+		void OnMyActorHit(AActor* SelfActor, AActor* OtherActor,
+			FVector NormalImpulse, const FHitResult& Hit);
+	
 
 public:	
 	// Called every frame

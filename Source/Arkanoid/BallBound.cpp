@@ -15,7 +15,8 @@ ABallBound::ABallBound()
 	PrimaryActorTick.bCanEverTick = true;
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
-
+	// BoxCollision->SetCollisionProfileName(TEXT("PhysicsActor"));
+	BoxCollision->InitBoxExtent(FVector(512.f, 32.f, 32.f));
 }
 
 // Called when the game starts or when spawned

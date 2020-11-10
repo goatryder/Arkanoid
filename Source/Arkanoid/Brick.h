@@ -6,9 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Brick.generated.h"
 
-class UBoxComponent;
+// class UBoxComponent;
 class UStaticMeshComponent;
-class ABall;
+// class ABall;
 
 
 UCLASS()
@@ -27,20 +27,27 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UStaticMeshComponent* SM_Brick;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		UBoxComponent* BoxCollision;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//	UBoxComponent* BoxCollision;
 
-	float BallVelocityModifierOnBounce = 0.00f;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	//	float BallVelocityModifierOnBounce = 5.0f;
 
+	/*
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* OtherActor,
 			UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 			const FHitResult& SweepResult);
+	*/
 
-	void AffectBallVelocity();
+	UFUNCTION()
+		void OnMyActorHit(AActor* SelfActor, AActor* OtherActor,
+			FVector NormalImpulse, const FHitResult& Hit);
+
+	// void AffectBallVelocity();
 	void DestroyBrick();
 
-	ABall* Ball;
+	// ABall* Ball;
 
 public:	
 	// Called every frame

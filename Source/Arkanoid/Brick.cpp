@@ -14,13 +14,19 @@ ABrick::ABrick()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
-	BoxCollision->SetBoxExtent(FVector(25.f, 10.f, 10.f));
-	RootComponent = BoxCollision;
+	//BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
+	//BoxCollision->SetBoxExtent(FVector(25.f, 10.f, 10.f));
+	//RootComponent = BoxCollision;
 
 	SM_Brick = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Brick"));
-	SM_Brick->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	SM_Brick->SetupAttachment(RootComponent);
+	
+	// SM_Brick->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SM_Brick->SetCollisionProfileName(TEXT("PhysicsActor"));
+
+	SM_Brick->SetNotifyRigidBodyCollision(true);
+	SM_Brick->SetGenerateOverlapEvents(false);
+
+	RootComponent = SM_Brick;
 }
 
 // Called when the game starts or when spawned
@@ -28,7 +34,7 @@ void ABrick::BeginPlay()
 {
 	AActor::BeginPlay();
 	
-	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &ABrick::OnOverlapBegin);
+	OnActorHit.AddDynamic(this, &ABrick::OnMyActorHit);
 
 }
 
@@ -39,9 +45,20 @@ void ABrick::Tick(float DeltaTime)
 
 }
 
-void ABrick::AffectBallVelocity()
+void ABrick::OnMyActorHit(AActor* SelfActor, AActor* OtherActor, 
+	FVector NormalImpulse, const FHitResult& Hit)
 {
 
+	FTimerHandle UnusedHandle;
+
+	GetWorldTimerManager().SetTimer(UnusedHandle, this, &ABrick::DestroyBrick, 0.1f, false);
+
+}
+
+/*
+void ABrick::AffectBallVelocity()
+{
+	
 	if (!Ball)
 		return;
 
@@ -55,23 +72,24 @@ void ABrick::AffectBallVelocity()
 	UE_LOG(LogTemp, Warning, TEXT("BallPhysicsVelocity Normalized: %s,  size: %f"),
 		*BallPhysicsVelocity.ToString(), BallPhysicsVelocity.Size());
 
-	Ball->VelocitySizeCache += BallVelocityModifierOnBounce;
+	// Ball->VelocitySizeCache += BallVelocityModifierOnBounce;
 
 	Ball->GetBall()->SetPhysicsLinearVelocity(
 		BallPhysicsVelocity * Ball->VelocitySizeCache, false);
 
 	UE_LOG(LogTemp, Warning, TEXT("Ball Velocity After: %s, Size: %f"),
 		*Ball->GetBall()->GetPhysicsLinearVelocity().ToString(), Ball->GetBall()->GetPhysicsLinearVelocity().Size());
-
-}
+	
+}*/
 
 void ABrick::DestroyBrick()
 {
 
-	AffectBallVelocity();
+	// AffectBallVelocity();
 	Destroy();
 }
 
+/*
 void ABrick::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
 	bool bFromSweep, const FHitResult& SweepResult)
@@ -87,4 +105,4 @@ void ABrick::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* OtherActor
 
 	}
 
-}
+}*/

@@ -35,12 +35,24 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		float BallVelocityModifierOnBounce = 5.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		float MaxBounceXNormalAngle = 60.0f;
+
 	UFUNCTION()
 		UStaticMeshComponent* GetBall();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector LaunchImpulse = FVector(1300.f, 0.f, 1400.f);
+		FVector LaunchImpulse = FVector(50.f, 0.f, 140.f);
 
 	float VelocitySizeCache = LaunchImpulse.Size();
+	
+	UFUNCTION()
+		//void OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
+		void OnBounce(UPrimitiveComponent* OverlapComp, AActor* OtherActor,
+			UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+			const FHitResult& SweepResult);
 
 };
